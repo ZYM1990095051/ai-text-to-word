@@ -1,0 +1,19 @@
+# Python 自动生成的缓存文件
+__pycache__/
+*.py[cod]
+
+# 编辑器配置
+.idea/
+.vscode/
+
+# 程序运行后自动生成的输出文件
+output_md/
+output_docx/
+
+# 系统杂项文件
+.DS_Store
+Thumbs.db
+
+# 你自己的临时笔记或废弃目录
+txt.txt
+处理文本/
