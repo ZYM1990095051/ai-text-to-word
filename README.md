@@ -1,107 +1,53 @@
+<div align="center">
+
 # AI Text To Word
 
-把 AI 生成的含公式文本整理成 Markdown 和 Word 文档，尽量减少复制到 WPS / Word 后出现的公式乱码问题。
+**把 AI 生成的含公式文本，整理成更适合 WPS / Word 的 Markdown 和 DOCX。**
 
-这个项目现在支持三步：
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
+![Pandoc](https://img.shields.io/badge/Pandoc-Required-1A1A1A?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square&logo=windows&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-1. `txt -> md`
-2. `md -> docx`
-3. `txt -> docx` 一键转换
+</div>
 
-## 这个项目解决什么问题
+## Why This Project
 
-很多 AI 生成的学习资料、讲义、题解都会夹杂 LaTeX 公式或化学公式。  
-直接复制进 WPS / Word 时，经常会出现下面几类问题：
+很多 AI 生成的讲义、题解、学习资料都混着中文、LaTeX 公式和化学公式。  
+这些内容直接复制到 WPS / Word 后，常见问题是：
 
-- 中文和公式混在一起时格式很乱
-- `\(...\)`、`\[...\]` 这类公式分隔符不能直接好看地显示
-- 化学公式如 `\ce{H+}`、`\ce{OH-}` 导出后容易变成普通文本
-- 手动在 WPS 里逐个“插入公式 -> 转为专业格式”很费时间
+- 公式分隔符原样暴露，阅读体验很差
+- 数学公式和化学公式混排时容易乱
+- `\ce{H+}`、`\ce{OH-}` 这类化学式经常退化成普通文本
+- 手动逐个“插入公式 -> 转为专业格式”很费时间
 
-这个仓库的思路是：
+这个项目的目标就是把这件事自动化。
 
-- 先把原始 TXT 统一整理成更稳定的 Markdown
-- 再把 Markdown 通过 `pandoc` 转成 DOCX
-- 在导出 DOCX 前，先预处理一部分化学公式写法，让 Word / WPS 更容易识别成公式对象
+## What It Does
 
-## 先看这些文件
+项目当前支持三段式流程：
 
-你现在只要先认识下面这些就够了：
-
-- `README.md`
-  这是项目说明书。以后别人点进你的 GitHub，第一个看的就是它。
-- `txt_to_md.py`
-  把原始 `.txt` 转成 `.md`。
-- `md_to_docx.py`
-  把 `.md` 转成 `.docx`。
-- `txt_to_word.py`
-  一键执行完整流程，最适合你平时直接用。
-- `原始文本/`
-  放你准备转换的 `.txt` 文件。
-- `output_md/`
-  程序自动生成的 Markdown 输出目录。
-- `output_docx/`
-  程序自动生成的 Word 输出目录。
-- `.gitignore`
-  告诉 Git 哪些文件不要上传，比如缓存文件、输出文件、你自己的临时笔记。
-- `LICENSE`
-  开源许可证，表示别人可以在什么规则下使用你的项目。
-- `.git/`
-  Git 自己的内部记录目录，不用手动改它。
-
-## 哪些文件你平时最常碰
-
-你以后大多数时候只需要看这 4 个地方：
-
-- `README.md`
-- `txt_to_word.py`
-- `原始文本/`
-- `output_docx/`
-
-如果你只是想“把文本转成 Word”，最简单的理解方式就是：
-
-1. 把 `.txt` 放进 `原始文本/`
-2. 运行 `python txt_to_word.py`
-3. 去 `output_docx/` 找结果
-
-## 当前功能
-
-### `txt_to_md.py`
-
-- 自动尝试 UTF-8、UTF-16、GBK、GB18030 等常见编码
-- 统一换行和常见不可见字符
-- 把 `\(...\)` 转成 `$...$`
-- 把 `\[...\]` 转成 `$$...$$`
-- 支持单文件和整目录批量转换
-
-### `md_to_docx.py`
-
-- 调用 `pandoc` 生成真正的 `.docx`
-- 把 Markdown 数学公式导出为 Office 公式对象
-- 对 `\ce{...}` 这类化学公式做预处理
-- 支持单文件和整目录批量转换
-- 支持 `--reference-doc` 复用你的 DOCX 样式模板
-
-### `txt_to_word.py`
-
-- 直接把 `txt` 一键转成 `docx`
-- 中间会自动生成 Markdown
-- 适合日常直接出 Word 文档
-
-## 环境要求
-
-- Python 3.10+
-- 已安装 `pandoc`
-
-先在终端里确认：
-
-```bash
-pandoc --version
+```text
+TXT  ->  Markdown  ->  DOCX
 ```
 
-## 快速开始
+也支持直接一键：
 
-### 1. 一键 TXT 转 DOCX
+```text
+TXT  ->  DOCX
+```
+
+核心能力：
+
+- 自动识别常见文本编码，如 UTF-8、UTF-16、GBK、GB18030
+- 规范化 AI 文本里的数学公式分隔符
+- 将 Markdown 数学公式导出为 Office 公式对象
+- 对常见化学公式写法做预处理，减少导出后乱码或退化
+- 支持单文件和整目录批量转换
+
+## Quick Start
+
+> 如果你只想直接把 `.txt` 变成 Word，优先用这一条：
 
 ```bash
 python txt_to_word.py
@@ -109,112 +55,101 @@ python txt_to_word.py
 
 默认流程：
 
-- 从 `原始文本` 读取 `.txt`
-- 生成到 `output_md`
-- 再输出到 `output_docx`
+1. 从 `原始文本/` 读取 `.txt`
+2. 生成中间 Markdown 到 `output_md/`
+3. 生成最终 Word 文档到 `output_docx/`
 
-### 2. 只做 TXT 转 Markdown
+### 分步运行
+
+先做 `txt -> md`：
 
 ```bash
 python txt_to_md.py
 ```
 
-### 3. 只做 Markdown 转 DOCX
+再做 `md -> docx`：
 
 ```bash
 python md_to_docx.py
 ```
 
-### 4. 指定单个文件
+### 指定单个文件
 
 ```bash
 python txt_to_word.py "原始文本\01.txt" --md-output "output_md\01.md" --docx-output "output_docx\01.docx"
 ```
 
-### 5. 使用 Word / WPS 样式模板
+### 使用参考模板
 
 ```bash
 python txt_to_word.py "原始文本\01.txt" --reference-doc "your-template.docx"
 ```
 
-## 示例
+## Requirements
 
-当前仓库里已经放了一个示例流程：
+- Python 3.10+
+- `pandoc`
 
-- 输入样例：`原始文本/01.txt`
-- Markdown 输出：`output_md/01.md`
-- DOCX 输出：`output_docx/01.docx`
-
-## 怎么上传到 GitHub
-
-下面是最适合新手的一套流程。
-
-### 第一步：去 GitHub 新建一个空仓库
-
-在 GitHub 网页上：
-
-1. 登录你的 GitHub 账号
-2. 点右上角 `+`
-3. 点 `New repository`
-4. 仓库名可以填：`ai-text-to-word`
-5. 先不要勾选 `Add a README file`
-6. 点 `Create repository`
-
-创建完后，GitHub 会给你一个仓库地址，格式大概像这样：
+先确认 `pandoc` 已安装：
 
 ```bash
-https://github.com/你的用户名/ai-text-to-word.git
+pandoc --version
 ```
 
-### 第二步：如果 Git 还没设置名字和邮箱，先设置一次
+## Project Structure
 
-如果你是第一次用 Git，在终端里执行：
-
-```bash
-git config --global user.name "你的名字"
-git config --global user.email "你的邮箱"
+```text
+AI文本转换/
+├─ txt_to_md.py       # TXT -> Markdown
+├─ md_to_docx.py      # Markdown -> DOCX
+├─ txt_to_word.py     # 一键 TXT -> DOCX
+├─ 原始文本/           # 输入文本
+├─ output_md/         # 中间 Markdown 输出
+├─ output_docx/       # 最终 DOCX 输出
+├─ README.md
+├─ LICENSE
+└─ .gitignore
 ```
 
-### 第三步：在当前项目目录执行下面这些命令
+## Scripts
 
-```bash
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/你的用户名/ai-text-to-word.git
-git push -u origin main
-```
+| Script | Purpose |
+| --- | --- |
+| `txt_to_md.py` | 读取原始 `.txt`，统一编码、换行和公式分隔符，输出 `.md` |
+| `md_to_docx.py` | 调用 `pandoc` 把 Markdown 转成 `.docx`，尽量保留公式为 Office 公式对象 |
+| `txt_to_word.py` | 串联前两步，适合日常直接使用 |
 
-### 第四步：刷新 GitHub 页面
+## Example
 
-如果上传成功，你会在 GitHub 页面看到这些内容：
+仓库里已经包含一组示例文件：
 
-- `README.md`
-- 3 个 Python 脚本
-- `原始文本/` 示例文件
-- `LICENSE`
+- 输入样例：[原始文本/01.txt](./原始文本/01.txt)
+- Markdown 输出示例：[output_md/01.md](./output_md/01.md)
+- DOCX 输出示例：`output_docx/01.docx`
 
-而下面这些不会被上传，这是正常的：
+## Formula Handling
 
-- `output_md/`
-- `output_docx/`
-- `__pycache__/`
-- `txt.txt`
+这个项目目前主要处理两类内容：
 
-因为 `.gitignore` 已经帮你排除了它们。
+- 数学公式：把 `\(...\)`、`\[...\]` 等形式整理成更标准的 Markdown 数学格式
+- 化学公式：对 `\ce{...}` 这类常见写法做预处理，提升导出到 Word / WPS 时的可读性
 
-## 已知限制
+最终的 DOCX 生成依赖 `pandoc`。  
+这意味着它不是简单把公式当普通文本复制进去，而是尽量生成 Word 能识别的公式内容。
 
-- 目前优先处理常见数学公式和常见化学公式
-- 如果文本里用了非常冷门的 LaTeX 宏，可能还需要继续补规则
-- WPS 对公式兼容通常不错，但和 Word 最终显示仍可能有少量差异
+## Current Limits
 
-## 后面还能继续加什么
+- 优先覆盖常见数学公式和常见化学公式
+- 极少数冷门 LaTeX 宏可能还需要额外规则
+- WPS 和 Word 的显示效果通常接近，但个别场景仍可能有差异
 
+## Roadmap
+
+- 更强的化学公式兼容
+- 更完善的 DOCX 样式控制
 - 图形界面
-- 拖拽文件转换
-- 批量处理整个资料目录
-- 更强的化学公式/数学公式兼容
-- 直接打包成 Windows 可执行程序
+- 拖拽式批量转换
+- 打包成 Windows 可执行程序
 
 ## License
 
